@@ -54,7 +54,7 @@ public class AdController {
             @RequestParam("email") String email) {
         try {
             Ad ad = new Ad(userId, title, price, description, condition, category, location, phoneNumber, email);
-            return new ResponseEntity<>(adService.saveAd(ad, images), HttpStatus.OK);
+            return adService.saveAd(ad, images);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -74,9 +74,9 @@ public class AdController {
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("email") String email) {
         try {
-            return new ResponseEntity<>(adService.updateAdById(userId, adId, title, price, description, condition, category, location, phoneNumber, email, images), HttpStatus.OK);
+            return adService.updateAdById(userId, adId, title, price, description, condition, category, location, phoneNumber, email, images);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(new AdDto(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

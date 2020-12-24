@@ -1,6 +1,8 @@
 package rsoapp.adms.service;
 
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import rsoapp.adms.model.dto.AdDto;
@@ -9,11 +11,9 @@ import rsoapp.adms.model.dto.ImageDto;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.repository.AdRepository;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,31 +56,21 @@ public class AdService {
         return userAdsDto;
     }
 
-    public AdDto saveAd(Ad ad, List<MultipartFile> images) {
+    public ResponseEntity<AdDto> saveAd(Ad ad, List<MultipartFile> images) {
         try {
             Ad savedAd = adRepository.save(ad);
-
             List<ImageDto> savedImages = new ArrayList<>();
-            int consecutiveNumber = 0;
 
-            // we save images to msimage
+            // save images to msimage
             for (MultipartFile imageFile : images) {
-                ImageDto image = new ImageDto();
-                image.setAdId(savedAd.getId());
-                BufferedImage bimg = ImageIO.read(imageFile.getInputStream());
-                image.setHeight(bimg.getHeight());
-                image.setWidth(bimg.getWidth());
-                image.setConsecutiveNumber(consecutiveNumber);
-                System.out.println(Base64.getEncoder().encodeToString(imageFile.getBytes()).length());
-                image.setImage(Base64.getEncoder().encodeToString(imageFile.getBytes()));
-                savedImages.add(restTemplate.postForObject("http://localhost:8080/v1/image", image, ImageDto.class));
-                consecutiveNumber ++;
+                ImageDto savedImage = sendImageToMsImage(imageFile, savedAd.getId());
+                savedImages.add(savedImage);
             }
 
-            return adToAdDto(savedAd, new AdImagesDto(savedImages));
-
+            return new ResponseEntity<>(adToAdDto(savedAd, new AdImagesDto(savedImages)), HttpStatus.OK);
         } catch (Exception e) {
-            return null;
+            System.out.println(e.toString());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -89,7 +79,7 @@ public class AdService {
         restTemplate.delete("http://localhost:8080/v1/ads/" + adId.toString() + "/images");
     }
 
-    public AdDto updateAdById(Integer userId, Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
+    public ResponseEntity<AdDto> updateAdById(Integer userId, Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
         Optional<Ad> query = adRepository.findById(adId);
 
         if(query.isEmpty()) {
@@ -109,21 +99,22 @@ public class AdService {
         ad.setPhoneNumber(phoneNumber);
         ad.setEmail(email);
 
-        List<ImageDto> imagesToUpdate = new ArrayList<>();
-
         // Update images
         try {
-            int consecutiveNumber = 0;
-            for (MultipartFile imageFile : images) {
-                imagesToUpdate.add(multipartFileToImageDto(adId, consecutiveNumber, imageFile));
-                consecutiveNumber ++;
-            }
-            restTemplate.put("http://localhost:8080/v1/image/" + adId.toString() + "/images", new AdImagesDto(imagesToUpdate), AdImagesDto.class);
-        } catch (Exception e) {
-            return adToAdDto(ad, new AdImagesDto(imagesToUpdate));
-        }
+            restTemplate.delete("http://localhost:8080/v1/ads/" + adId + "/images");
 
-        return adToAdDto(adRepository.save(ad), new AdImagesDto(imagesToUpdate));
+            List<ImageDto> savedImages = new ArrayList<>();
+
+            // save images to msimage
+            for (MultipartFile imageFile : images) {
+                ImageDto savedImage = sendImageToMsImage(imageFile, adId);
+                savedImages.add(savedImage);
+            }
+
+            return new ResponseEntity<>(adToAdDto(adRepository.save(ad), new AdImagesDto(savedImages)), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(adToAdDto(ad, new AdImagesDto()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -162,19 +153,21 @@ public class AdService {
         return adDto;
     }
 
-    // converts multipart file image to ImageDto
-    private ImageDto multipartFileToImageDto(Integer adId, Integer consecutiveNumber, MultipartFile imageFile) {
-        try {
-            ImageDto image = new ImageDto();
-            image.setAdId(adId);
-            BufferedImage bimg = ImageIO.read(imageFile.getInputStream());
-            image.setHeight(bimg.getHeight());
-            image.setWidth(bimg.getWidth());
-            image.setConsecutiveNumber(consecutiveNumber);
-            image.setImage(Base64.getEncoder().encodeToString(imageFile.getBytes()));
-            return image;
-        } catch (IOException e) {
-            return new ImageDto();
-        }
+    private ImageDto sendImageToMsImage(MultipartFile imageFile, Integer adId) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        LinkedMultiValueMap<String, String> pdfHeaderMap = new LinkedMultiValueMap<>();
+        pdfHeaderMap.add("Content-disposition", "form-data; name=imageFile; filename=" + imageFile.getOriginalFilename());
+        pdfHeaderMap.add("Content-type", "application/pdf");
+        HttpEntity<byte[]> doc = new HttpEntity<>(imageFile.getBytes(), pdfHeaderMap);
+
+        LinkedMultiValueMap<String, Object> multipartReqMap = new LinkedMultiValueMap<>();
+        multipartReqMap.add("imageFile", doc);
+
+        HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
+        ResponseEntity<ImageDto> resE = restTemplate.exchange("http://localhost:8080/v1/ads/" + adId + "/images", HttpMethod.POST, reqEntity, ImageDto.class);
+
+        return resE.getBody();
     }
 }

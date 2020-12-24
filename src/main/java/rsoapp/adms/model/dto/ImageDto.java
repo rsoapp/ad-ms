@@ -13,15 +13,13 @@ public class ImageDto {
 
     private Integer id;
     private Integer adId;
-    private Integer consecutiveNumber;
     private Integer height;
     private Integer width;
-    private String image;
+    private byte[] imageBytes;
 
-    public ImageDto(Integer consecutiveNumber, Integer height, Integer width, String image) {
-        this.consecutiveNumber = consecutiveNumber;
+    public ImageDto(Integer height, Integer width, byte[] imageBytes) {
         this.height = height;
         this.width = width;
-        this.image = image;
+        this.imageBytes = imageBytes;
     }
 }

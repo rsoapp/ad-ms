@@ -6,4 +6,4 @@ COPY ${JAR_FILE} ad-ms-api-1.0.0-SNAPSHOT.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "image-ms-api-1.0.0-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "ad-ms-api-1.0.0-SNAPSHOT.jar"]

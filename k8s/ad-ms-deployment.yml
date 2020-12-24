@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ad-ms-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ad-ms
+  template:
+    metadata:
+      labels:
+        app: ad-ms
+    spec:
+      containers:
+        - image: rsolinux/ad-ms:latest
+          name: ad-ms
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://suleiman.db.elephantsql.com:5432/obugcdwa
+            - name: SPRING_DATASOURCE_USERNAME
+              value: obugcdwa
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ad-pg-pass
+                  key: password
+          ports:
+            - containerPort: 8080
+              name: server
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ad-ms
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: server
+  selector:
+    app: ad-ms

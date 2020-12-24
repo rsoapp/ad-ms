@@ -11,7 +11,6 @@ import rsoapp.adms.model.dto.ImageDto;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.repository.AdRepository;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +75,7 @@ public class AdService {
 
     public void deleteAdById(Integer adId) {
         adRepository.deleteById(adId);
-        restTemplate.delete("http://localhost:8080/v1/ads/" + adId.toString() + "/images");
+        restTemplate.delete("http://image-ms:8080/v1/ads/" + adId.toString() + "/images");
     }
 
     public ResponseEntity<AdDto> updateAdById(Integer userId, Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
@@ -101,7 +100,7 @@ public class AdService {
 
         // Update images
         try {
-            restTemplate.delete("http://localhost:8080/v1/ads/" + adId + "/images");
+            restTemplate.delete("http://image-ms:8080/v1/ads/" + adId + "/images");
 
             List<ImageDto> savedImages = new ArrayList<>();
 
@@ -122,7 +121,7 @@ public class AdService {
     // gets images from msimage
     private AdImagesDto getAdImages(Integer adId) {
         try {
-            return restTemplate.getForObject("http://localhost:8080/v1/ads/" + adId.toString() + "/images", AdImagesDto.class);
+            return restTemplate.getForObject("http://image-ms:8080/v1/ads/" + adId.toString() + "/images", AdImagesDto.class);
         } catch (Exception e) {
             return null;
         }
@@ -166,7 +165,7 @@ public class AdService {
         multipartReqMap.add("imageFile", doc);
 
         HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
-        ResponseEntity<ImageDto> resE = restTemplate.exchange("http://localhost:8080/v1/ads/" + adId + "/images", HttpMethod.POST, reqEntity, ImageDto.class);
+        ResponseEntity<ImageDto> resE = restTemplate.exchange("http://image-ms:8080/v1/ads/" + adId + "/images", HttpMethod.POST, reqEntity, ImageDto.class);
 
         return resE.getBody();
     }

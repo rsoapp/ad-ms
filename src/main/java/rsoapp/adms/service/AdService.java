@@ -2,13 +2,18 @@ package rsoapp.adms.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import rsoapp.adms.model.dto.AdDto;
 import rsoapp.adms.model.dto.AdImagesDto;
 import rsoapp.adms.model.dto.ImageDto;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.repository.AdRepository;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +30,14 @@ public class AdService {
 
     public AdDto getAdById(Integer adId) {
         Optional<Ad> query = adRepository.findById(adId);
-        return adToAdDto(query.get());
+
+        if (query.isPresent()) {
+            AdImagesDto adImagesDto = getAdImages(query.get().getId());
+            return adToAdDto(query.get(), adImagesDto);
+        }
+        else {
+            return null;
+        }
     }
 
     public List<AdDto> getUserAds(Integer userId) {
@@ -33,65 +45,100 @@ public class AdService {
         List<AdDto> userAdsDto = new ArrayList<>(userAds.size());
 
         for (Ad userAd : userAds) {
-            userAdsDto.add(adToAdDto(userAd));
+            try {
+                AdImagesDto adImagesDto = getAdImages(userAd.getId());
+                userAdsDto.add(adToAdDto(userAd, adImagesDto));
+            } catch (Exception e) {
+                userAdsDto.add(adToAdDto(userAd, null));
+            }
         }
 
         return userAdsDto;
     }
 
-    public Integer saveAd(AdDto adDto) {
+    public AdDto saveAd(Ad ad, List<MultipartFile> images) {
         try {
-            Ad savedAd = adRepository.save(adDtoToAd(adDto));
+            Ad savedAd = adRepository.save(ad);
+
+            List<ImageDto> savedImages = new ArrayList<>();
+            int consecutiveNumber = 0;
 
             // we save images to msimage
-            for (ImageDto image : adDto.getAdImagesDto().getImages()) {
+            for (MultipartFile imageFile : images) {
+                ImageDto image = new ImageDto();
                 image.setAdId(savedAd.getId());
-                restTemplate.postForObject("http://localhost:8081/image", image, Integer.class);
+                BufferedImage bimg = ImageIO.read(imageFile.getInputStream());
+                image.setHeight(bimg.getHeight());
+                image.setWidth(bimg.getWidth());
+                image.setConsecutiveNumber(consecutiveNumber);
+                System.out.println(Base64.getEncoder().encodeToString(imageFile.getBytes()).length());
+                image.setImage(Base64.getEncoder().encodeToString(imageFile.getBytes()));
+                savedImages.add(restTemplate.postForObject("http://localhost:8080/v1/image", image, ImageDto.class));
+                consecutiveNumber ++;
             }
 
-            return savedAd.getId();
+            return adToAdDto(savedAd, new AdImagesDto(savedImages));
+
         } catch (Exception e) {
-            return -1;
+            return null;
         }
     }
 
     public void deleteAdById(Integer adId) {
         adRepository.deleteById(adId);
-        restTemplate.delete("http://localhost:8081/ad/" + adId.toString() + "/images");
+        restTemplate.delete("http://localhost:8080/v1/ads/" + adId.toString() + "/images");
     }
 
-    public void updateAdById(Integer adId, AdDto adData) {
+    public AdDto updateAdById(Integer userId, Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
         Optional<Ad> query = adRepository.findById(adId);
 
         if(query.isEmpty()) {
-            return;
+            return null;
         }
 
         Ad ad = query.get();
 
-        ad.setId(adData.getId());
-        ad.setUserId(adData.getUserId());
-        ad.setTitle(adData.getTitle());
-        ad.setPrice(adData.getPrice());
-        ad.setDescription(adData.getDescription());
-        ad.setCondition(adData.getCondition());
-        ad.setCategory(adData.getCategory());
+        ad.setUserId(userId);
+        ad.setTitle(title);
+        ad.setPrice(price);
+        ad.setDescription(description);
+        ad.setCondition(condition);
+        ad.setCategory(category);
 //        ad.setCreated(adData.getCreated());
-        ad.setLocation(adData.getLocation());
-        ad.setPhoneNumber(adData.getPhoneNumber());
-        ad.setEmail(adData.getEmail());
+        ad.setLocation(location);
+        ad.setPhoneNumber(phoneNumber);
+        ad.setEmail(email);
+
+        List<ImageDto> imagesToUpdate = new ArrayList<>();
 
         // Update images
-        restTemplate.put("http://localhost:8081/ad/" + adId.toString() + "/images", adData.getAdImagesDto(), AdImagesDto.class);
+        try {
+            int consecutiveNumber = 0;
+            for (MultipartFile imageFile : images) {
+                imagesToUpdate.add(multipartFileToImageDto(adId, consecutiveNumber, imageFile));
+                consecutiveNumber ++;
+            }
+            restTemplate.put("http://localhost:8080/v1/image/" + adId.toString() + "/images", new AdImagesDto(imagesToUpdate), AdImagesDto.class);
+        } catch (Exception e) {
+            return adToAdDto(ad, new AdImagesDto(imagesToUpdate));
+        }
 
-        adRepository.save(ad);
+        return adToAdDto(adRepository.save(ad), new AdImagesDto(imagesToUpdate));
     }
 
 
 
+    // gets images from msimage
+    private AdImagesDto getAdImages(Integer adId) {
+        try {
+            return restTemplate.getForObject("http://localhost:8080/v1/ads/" + adId.toString() + "/images", AdImagesDto.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     // converts Ad to AdDto
-    private AdDto adToAdDto(Ad ad) {
+    private AdDto adToAdDto(Ad ad, AdImagesDto adImagesDto) {
 
         if (ad == null) {
             return null;
@@ -110,40 +157,24 @@ public class AdService {
         adDto.setLocation(ad.getLocation());
         adDto.setPhoneNumber(ad.getPhoneNumber());
         adDto.setEmail(ad.getEmail());
-        adDto.setAdImagesDto(getAdImages(ad.getId()));
+        adDto.setAdImagesDto(adImagesDto);
 
         return adDto;
     }
 
-    // converts AdDto to Ad
-    private Ad adDtoToAd(AdDto adDto) {
-
-        if (adDto == null) {
-            return null;
-        }
-
-        Ad ad = new Ad();
-
-        ad.setUserId(adDto.getUserId());
-        ad.setTitle(adDto.getTitle());
-        ad.setPrice(adDto.getPrice());
-        ad.setDescription(adDto.getDescription());
-        ad.setCondition(adDto.getCondition());
-        ad.setCategory(adDto.getCategory());
-//        ad.setCreated(adDto.getCreated());
-        ad.setLocation(adDto.getLocation());
-        ad.setPhoneNumber(adDto.getPhoneNumber());
-        ad.setEmail(adDto.getEmail());
-
-        return ad;
-    }
-
-    // gets images from msimage
-    private AdImagesDto getAdImages(Integer adId) {
+    // converts multipart file image to ImageDto
+    private ImageDto multipartFileToImageDto(Integer adId, Integer consecutiveNumber, MultipartFile imageFile) {
         try {
-            return restTemplate.getForObject("http://localhost:8081/ad/" + adId.toString() + "/images", AdImagesDto.class);
-        } catch (Exception e) {
-            return null;
+            ImageDto image = new ImageDto();
+            image.setAdId(adId);
+            BufferedImage bimg = ImageIO.read(imageFile.getInputStream());
+            image.setHeight(bimg.getHeight());
+            image.setWidth(bimg.getWidth());
+            image.setConsecutiveNumber(consecutiveNumber);
+            image.setImage(Base64.getEncoder().encodeToString(imageFile.getBytes()));
+            return image;
+        } catch (IOException e) {
+            return new ImageDto();
         }
     }
 }

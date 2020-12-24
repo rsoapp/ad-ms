@@ -1,6 +1,8 @@
 package rsoapp.adms.model.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -9,6 +11,8 @@ import java.time.Instant;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "ad")
 public class Ad {
 
@@ -45,4 +49,17 @@ public class Ad {
 
     @Column(name = "email")
     private String email;
+
+    public Ad(Integer userId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email) {
+        this.userId = userId;
+        this.title = title;
+        this.price = price;
+        this.description = description;
+        this.condition = condition;
+        this.category = category;
+        this.created = created;
+        this.location = location;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
 }

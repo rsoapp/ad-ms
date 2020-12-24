@@ -16,9 +16,9 @@ public class ImageDto {
     private Integer consecutiveNumber;
     private Integer height;
     private Integer width;
-    private Byte[] image;
+    private String image;
 
-    public ImageDto(Integer consecutiveNumber, Integer height, Integer width, Byte[] image) {
+    public ImageDto(Integer consecutiveNumber, Integer height, Integer width, String image) {
         this.consecutiveNumber = consecutiveNumber;
         this.height = height;
         this.width = width;

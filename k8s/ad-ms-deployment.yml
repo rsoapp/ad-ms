@@ -51,7 +51,7 @@ kind: Service
 metadata:
   name: ad-ms
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
     - port: 8080
       protocol: TCP

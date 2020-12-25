@@ -30,7 +30,7 @@ public class AdController {
         }
     }
 
-    @GetMapping("/user/{userId}/ads")
+    @GetMapping("ads/user/{userId}")
     public ResponseEntity<List<AdDto>> getUserAds(@PathVariable Integer userId) {
         try {
             List<AdDto> userAds = adService.getUserAds(userId);
@@ -40,7 +40,10 @@ public class AdController {
         }
     }
 
-    @PostMapping("/user/{userId}/ads")
+
+
+
+    @PostMapping("ads/user/{userId}")
     public ResponseEntity<AdDto> saveAd(
             @PathVariable Integer userId,
             @RequestParam("images") List<MultipartFile> images,
@@ -60,9 +63,11 @@ public class AdController {
         }
     }
 
-    @PutMapping("/user/{userId}/ads/{adId}")
+
+
+
+    @PutMapping("ads/{adId}")
     public ResponseEntity<AdDto> updateAd(
-            @PathVariable Integer userId,
             @PathVariable Integer adId,
             @RequestParam("images") List<MultipartFile> images,
             @RequestParam("title") String title,
@@ -74,13 +79,16 @@ public class AdController {
             @RequestParam("phoneNumber") String phoneNumber,
             @RequestParam("email") String email) {
         try {
-            return adService.updateAdById(userId, adId, title, price, description, condition, category, location, phoneNumber, email, images);
+            return adService.updateAdById(adId, title, price, description, condition, category, location, phoneNumber, email, images);
         } catch (Exception e) {
             return new ResponseEntity<>(new AdDto(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("ad/{adId}")
+
+
+
+    @DeleteMapping("ads/{adId}")
     public ResponseEntity<Void> deleteAd(@PathVariable Integer adId) {
         try {
             adService.deleteAdById(adId);

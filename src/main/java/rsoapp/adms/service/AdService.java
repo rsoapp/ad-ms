@@ -75,10 +75,10 @@ public class AdService {
 
     public void deleteAdById(Integer adId) {
         adRepository.deleteById(adId);
-        restTemplate.delete("http://image-ms:8080/v1/ads/" + adId.toString() + "/images");
+        restTemplate.delete("http://image-ms:8080/v1/images/ad/" + adId.toString());
     }
 
-    public ResponseEntity<AdDto> updateAdById(Integer userId, Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
+    public ResponseEntity<AdDto> updateAdById(Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
         Optional<Ad> query = adRepository.findById(adId);
 
         if(query.isEmpty()) {
@@ -87,7 +87,6 @@ public class AdService {
 
         Ad ad = query.get();
 
-        ad.setUserId(userId);
         ad.setTitle(title);
         ad.setPrice(price);
         ad.setDescription(description);
@@ -100,7 +99,7 @@ public class AdService {
 
         // Update images
         try {
-            restTemplate.delete("http://image-ms:8080/v1/ads/" + adId + "/images");
+            restTemplate.delete("http://image-ms:8080/v1/images/ad/" + adId);
 
             List<ImageDto> savedImages = new ArrayList<>();
 
@@ -121,7 +120,7 @@ public class AdService {
     // gets images from msimage
     private AdImagesDto getAdImages(Integer adId) {
         try {
-            return restTemplate.getForObject("http://image-ms:8080/v1/ads/" + adId.toString() + "/images", AdImagesDto.class);
+            return restTemplate.getForObject("http://image-ms:8080/v1/images/ad/" + adId.toString(), AdImagesDto.class);
         } catch (Exception e) {
             return null;
         }
@@ -165,7 +164,7 @@ public class AdService {
         multipartReqMap.add("imageFile", doc);
 
         HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
-        ResponseEntity<ImageDto> resE = restTemplate.exchange("http://image-ms:8080/v1/ads/" + adId + "/images", HttpMethod.POST, reqEntity, ImageDto.class);
+        ResponseEntity<ImageDto> resE = restTemplate.exchange("http://image-ms:8080/v1/images/ad/" + adId, HttpMethod.POST, reqEntity, ImageDto.class);
 
         return resE.getBody();
     }

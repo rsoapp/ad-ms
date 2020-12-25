@@ -11,7 +11,7 @@ import rsoapp.adms.service.AdService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/")
+@RequestMapping("/v1/ads/")
 public class AdController {
 
     private final AdService adService;
@@ -20,7 +20,7 @@ public class AdController {
         this.adService = adService;
     }
 
-    @GetMapping("ads/{adId}")
+    @GetMapping("{adId}")
     public ResponseEntity<AdDto> getAdById(@PathVariable Integer adId) {
         try {
             AdDto ad = adService.getAdById(adId);
@@ -30,7 +30,7 @@ public class AdController {
         }
     }
 
-    @GetMapping("ads/user/{userId}")
+    @GetMapping("user/{userId}")
     public ResponseEntity<List<AdDto>> getUserAds(@PathVariable Integer userId) {
         try {
             List<AdDto> userAds = adService.getUserAds(userId);
@@ -43,7 +43,7 @@ public class AdController {
 
 
 
-    @PostMapping("ads/user/{userId}")
+    @PostMapping("user/{userId}")
     public ResponseEntity<AdDto> saveAd(
             @PathVariable Integer userId,
             @RequestParam("images") List<MultipartFile> images,
@@ -66,7 +66,7 @@ public class AdController {
 
 
 
-    @PutMapping("ads/{adId}")
+    @PutMapping("{adId}")
     public ResponseEntity<AdDto> updateAd(
             @PathVariable Integer adId,
             @RequestParam("images") List<MultipartFile> images,
@@ -88,7 +88,7 @@ public class AdController {
 
 
 
-    @DeleteMapping("ads/{adId}")
+    @DeleteMapping("{adId}")
     public ResponseEntity<Void> deleteAd(@PathVariable Integer adId) {
         try {
             adService.deleteAdById(adId);

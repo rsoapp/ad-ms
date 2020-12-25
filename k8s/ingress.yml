@@ -9,10 +9,6 @@ spec:
   rules:
     - http:
         paths:
-          - path: /images/*
-            backend:
-              serviceName: image-ms
-              servicePort: 8080
           - path: /ads/*
             backend:
               serviceName: ad-ms

@@ -29,6 +29,20 @@ spec:
             - containerPort: 8080
               name: server
               protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: server
+            initialDelaySeconds: 30
+            periodSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: server
+            initialDelaySeconds: 30
+            periodSeconds: 3
+            failureThreshold: 3
 
 ---
 
@@ -37,7 +51,7 @@ kind: Service
 metadata:
   name: ad-ms
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8080
       protocol: TCP

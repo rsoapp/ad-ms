@@ -4,13 +4,13 @@ metadata:
   name: my-ingress
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
     - host: 35.239.153.130.xip.io
       http:
         paths:
-          - backend:
+          - path: /ad(/|$)(.*)
+            backend:
               serviceName: ad-ms
               servicePort: 8080
-            path: /ad/*

@@ -35,14 +35,14 @@ spec:
               port: server
             initialDelaySeconds: 30
             periodSeconds: 3
-            failureThreshold: 3
+            failureThreshold: 2
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: server
             initialDelaySeconds: 30
             periodSeconds: 3
-            failureThreshold: 3
+            failureThreshold: 2
 
 ---
 

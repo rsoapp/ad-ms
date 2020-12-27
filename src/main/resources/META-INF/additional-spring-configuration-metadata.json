@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "spring.application.version",
+      "type": "java.lang.String",
+      "description": "Description for spring.application.version."
+    },
+    {
+      "name": "spring.application.environmentType",
+      "type": "java.lang.String",
+      "description": "Description for spring.application.environmentType."
+    }
+  ] }

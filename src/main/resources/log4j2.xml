@@ -2,11 +2,17 @@
 <Configuration name="ads">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d %p %marker %m %X %ex %n"/>
+            <PatternLayout pattern="%highlight{%d %p %marker %m %X %ex %n}" disableAnsi="false"/>
         </Console>
         <Socket name="logstash" host="293dce91-05b0-41fd-bef2-0dd4e0cb541c-ls.logit.io"
                 port="10006" protocol="udp">
-            <JSONLayout complete="false" compact="true" eventEol="true" charset="UTF-8" properties="true"/>
+            <JSONLayout complete="false" compact="true" eventEol="true" charset="UTF-8" properties="true">
+                <KeyValuePair key="environmentType" value="${map:environmentType}" />
+                <KeyValuePair key="applicationName" value="${map:applicationName}" />
+                <KeyValuePair key="applicationVersion" value="${map:applicationVersion}" />
+                <KeyValuePair key="uniqueInstanceId" value="${map:uniqueInstanceId}" />
+                <KeyValuePair key="uniqueRequestId" value="${map:uniqueRequestId}" />
+            </JSONLayout>
         </Socket>
     </Appenders>
     <Loggers>

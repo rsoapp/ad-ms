@@ -16,6 +16,10 @@ spec:
         - image: rsolinux/ad-ms:latest
           name: ad-ms
           env:
+            - name: SPRING_APPLICATION_ENVIRONMENTTYPE
+              value: prod
+            - name: SERVER_PORT
+              value: 8080
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://suleiman.db.elephantsql.com:5432/obugcdwa
             - name: SPRING_DATASOURCE_USERNAME

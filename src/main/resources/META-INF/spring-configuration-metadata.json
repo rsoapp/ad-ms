@@ -1,0 +1,26 @@
+{
+  "groups": [
+    {
+      "name": "spring.application",
+      "type": "rsoapp.adms.config.CustomProperties",
+      "sourceType": "rsoapp.adms.config.CustomProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.application.version",
+      "type": "java.lang.String",
+      "description": "Description for spring.application.version.",
+      "sourceType": "spring.application.version",
+      "defaultValue": "1.0.0"
+    },
+    {
+      "name": "spring.application.environmentType",
+      "type": "java.lang.String",
+      "description": "Description for spring.application.environmentType.",
+      "sourceType": "spring.application.environmentType",
+      "defaultValue": "dev"
+    }
+  ],
+  "hints": []
+}

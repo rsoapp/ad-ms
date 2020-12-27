@@ -12,6 +12,9 @@
                 <KeyValuePair key="applicationVersion" value="${map:applicationVersion}" />
                 <KeyValuePair key="uniqueInstanceId" value="${map:uniqueInstanceId}" />
                 <KeyValuePair key="uniqueRequestId" value="${map:uniqueRequestId}" />
+                <KeyValuePair key="requestUri" value="${map:requestUri}" />
+                <KeyValuePair key="method" value="${map:method}" />
+                <KeyValuePair key="markerName" value="${map:markerName}" />
             </JSONLayout>
         </Socket>
     </Appenders>

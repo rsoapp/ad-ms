@@ -25,7 +25,7 @@ public class AdService {
     // just for testing
     private final String localUrl = "http://localhost:8080/v1/images/ad/";
     private final String productionUrl = "http://image-ms:8080/v1/images/ad/";
-    private final String urlInUse = productionUrl;
+    private final String urlInUse = localUrl;
 
     public AdService(AdRepository adRepository, RestTemplate restTemplate) {
         this.adRepository = adRepository;

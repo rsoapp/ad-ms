@@ -114,8 +114,10 @@ public class AdService {
 
             // save images to msimage
             for (MultipartFile imageFile : images) {
-                ImageDto savedImage = sendImageToMsImage(imageFile, adId);
-                savedImages.add(savedImage);
+                if (!nsfwDetectionClient.isNSFW(imageFile)) {
+                    ImageDto savedImage = sendImageToMsImage(imageFile, adId);
+                    savedImages.add(savedImage);
+                }
             }
 
             return new ResponseEntity<>(adToAdDto(adRepository.save(ad), new AdImagesDto(savedImages)), HttpStatus.OK);

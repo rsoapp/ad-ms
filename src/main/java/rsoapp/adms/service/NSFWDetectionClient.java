@@ -20,8 +20,11 @@ import java.math.BigDecimal;
 public class NSFWDetectionClient {
 
     private final double nsfwPropThr = 0.4;
+    private final boolean CHECK_NSFW = false;
 
     public boolean isNSFW(MultipartFile imageFile) {
+
+        if (!CHECK_NSFW) return false;
 
         String imageUrl = uploadImage(imageFile);
 

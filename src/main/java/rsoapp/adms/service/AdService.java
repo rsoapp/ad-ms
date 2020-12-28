@@ -27,7 +27,6 @@ public class AdService {
     private final String localUrl = "http://localhost:8080/v1/images/ad/";
     private final String productionUrl = "http://image-ms:8080/v1/images/ad/";
     private final String urlInUse = productionUrl;
-    private final boolean CHECK_NSFW = false;
 
     public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient) {
         this.adRepository = adRepository;
@@ -70,7 +69,7 @@ public class AdService {
 
             // save images to msimage
             for (MultipartFile imageFile : images) {
-                if (CHECK_NSFW && !nsfwDetectionClient.isNSFW(imageFile)) {
+                if (!nsfwDetectionClient.isNSFW(imageFile)) {
                     ImageDto savedImage = sendImageToMsImage(imageFile, savedAd.getId());
                     savedImages.add(savedImage);
                 }
@@ -115,7 +114,7 @@ public class AdService {
 
             // save images to msimage
             for (MultipartFile imageFile : images) {
-                if (CHECK_NSFW && !nsfwDetectionClient.isNSFW(imageFile)) {
+                if (!nsfwDetectionClient.isNSFW(imageFile)) {
                     ImageDto savedImage = sendImageToMsImage(imageFile, adId);
                     savedImages.add(savedImage);
                 }

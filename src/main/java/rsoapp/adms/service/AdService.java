@@ -21,15 +21,17 @@ public class AdService {
 
     private final AdRepository adRepository;
     private final RestTemplate restTemplate;
+    private final NSFWDetectionClient nsfwDetectionClient;
 
     // just for testing
     private final String localUrl = "http://localhost:8080/v1/images/ad/";
     private final String productionUrl = "http://image-ms:8080/v1/images/ad/";
     private final String urlInUse = productionUrl;
 
-    public AdService(AdRepository adRepository, RestTemplate restTemplate) {
+    public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient) {
         this.adRepository = adRepository;
         this.restTemplate = restTemplate;
+        this.nsfwDetectionClient = nsfwDetectionClient;
     }
 
     public AdDto getAdById(Integer adId) {
@@ -67,8 +69,10 @@ public class AdService {
 
             // save images to msimage
             for (MultipartFile imageFile : images) {
-                ImageDto savedImage = sendImageToMsImage(imageFile, savedAd.getId());
-                savedImages.add(savedImage);
+                if (!nsfwDetectionClient.isNSFW(imageFile)) {
+                    ImageDto savedImage = sendImageToMsImage(imageFile, savedAd.getId());
+                    savedImages.add(savedImage);
+                }
             }
 
             return new ResponseEntity<>(adToAdDto(savedAd, new AdImagesDto(savedImages)), HttpStatus.OK);

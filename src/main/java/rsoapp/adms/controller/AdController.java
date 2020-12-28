@@ -20,6 +20,11 @@ public class AdController {
         this.adService = adService;
     }
 
+    @GetMapping
+    public ResponseEntity<String> hello() {
+        return new ResponseEntity<>("Hello to ad app!", HttpStatus.OK);
+    }
+
     @GetMapping("{adId}")
     public ResponseEntity<AdDto> getAdById(@PathVariable Integer adId) {
         try {

@@ -24,9 +24,7 @@ public class AdService {
     private final NSFWDetectionClient nsfwDetectionClient;
 
     // just for testing
-    private final String localUrl = "http://localhost:8080/v1/images/ad/";
-    private final String productionUrl = "http://image-ms:8080/v1/images/ad/";
-    private final String urlInUse = productionUrl;
+    private final String msImageUrl = "http://image-ms:8080/v1/images/ad/";
 
     public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient) {
         this.adRepository = adRepository;
@@ -84,7 +82,7 @@ public class AdService {
 
     public void deleteAdById(Integer adId) {
         adRepository.deleteById(adId);
-        restTemplate.delete(urlInUse + adId.toString());
+        restTemplate.delete(msImageUrl + adId.toString());
     }
 
     public ResponseEntity<AdDto> updateAdById(Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
@@ -108,7 +106,7 @@ public class AdService {
 
         // Update images
         try {
-            restTemplate.delete(urlInUse + adId);
+            restTemplate.delete(msImageUrl + adId);
 
             List<ImageDto> savedImages = new ArrayList<>();
 
@@ -131,7 +129,8 @@ public class AdService {
     // gets images from msimage
     private AdImagesDto getAdImages(Integer adId) {
         try {
-            return restTemplate.getForObject(urlInUse + adId.toString(), AdImagesDto.class);
+            System.out.println(msImageUrl + adId.toString());
+            return restTemplate.getForObject(msImageUrl + adId.toString(), AdImagesDto.class);
         } catch (Exception e) {
             return null;
         }
@@ -175,7 +174,8 @@ public class AdService {
         multipartReqMap.add("imageFile", doc);
 
         HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
-        ResponseEntity<ImageDto> resE = restTemplate.exchange(urlInUse + adId, HttpMethod.POST, reqEntity, ImageDto.class);
+        System.out.println(msImageUrl + adId.toString());
+        ResponseEntity<ImageDto> resE = restTemplate.exchange(msImageUrl + adId.toString(), HttpMethod.POST, reqEntity, ImageDto.class);
 
         return resE.getBody();
     }

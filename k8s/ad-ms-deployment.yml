@@ -33,14 +33,14 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /v1/ads/health
               port: server
             initialDelaySeconds: 30
             periodSeconds: 3
             failureThreshold: 2
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /v1/ads/health/readiness
               port: server
             initialDelaySeconds: 30
             periodSeconds: 3

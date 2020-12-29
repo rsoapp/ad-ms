@@ -10,10 +10,6 @@ spec:
         backend:
           serviceName: ad-ms
           servicePort: 8080
-      - path: /ad
-        backend:
-          serviceName: ad-ms
-          servicePort: 8080
       - path: /v1/images/*
         backend:
           serviceName: image-ms

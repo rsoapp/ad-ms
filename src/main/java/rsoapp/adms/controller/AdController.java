@@ -8,6 +8,7 @@ import rsoapp.adms.model.dto.AdDto;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.service.AdService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -18,11 +19,6 @@ public class AdController {
 
     public AdController(AdService adService) {
         this.adService = adService;
-    }
-
-    @GetMapping
-    public ResponseEntity<String> hello() {
-        return new ResponseEntity<>("Hello to ad app!", HttpStatus.OK);
     }
 
     @GetMapping("{adId}")
@@ -48,6 +44,15 @@ public class AdController {
 
 
 
+    @PostMapping("search")
+    public ResponseEntity<List<AdDto>> searchAds(@RequestParam("keyword") String keyword) {
+        try {
+            return new ResponseEntity<>(adService.searchAds(keyword), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping("user/{userId}")
     public ResponseEntity<AdDto> saveAd(
             @PathVariable Integer userId,
@@ -56,12 +61,13 @@ public class AdController {
             @RequestParam("price") Integer price,
             @RequestParam("description") String description,
             @RequestParam("condition") String condition,
-            @RequestParam("category") String category,
-            @RequestParam("location") String location,
-            @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("email") String email) {
+            @RequestParam("category") String category
+//            @RequestParam("location") String location,
+//            @RequestParam("phoneNumber") String phoneNumber,
+//            @RequestParam("email") String email
+            ) {
         try {
-            Ad ad = new Ad(userId, title, price, description, condition, category, location, phoneNumber, email);
+            Ad ad = new Ad(userId, title, price, description, condition, category);
             return adService.saveAd(ad, images);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

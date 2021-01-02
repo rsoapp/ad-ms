@@ -60,6 +60,17 @@ public class AdService {
         return userAdsDto;
     }
 
+    public List<AdDto> searchAds(String keyword) {
+        List<Ad> userAds = adRepository.searchAds(keyword);
+        List<AdDto> userAdsDto = new ArrayList<>(userAds.size());
+
+        for (Ad userAd : userAds) {
+            userAdsDto.add(adToAdDto(userAd, null));
+        }
+
+        return userAdsDto;
+    }
+
     public ResponseEntity<AdDto> saveAd(Ad ad, List<MultipartFile> images) {
         try {
             Ad savedAd = adRepository.save(ad);
@@ -100,9 +111,9 @@ public class AdService {
         ad.setCondition(condition);
         ad.setCategory(category);
 //        ad.setCreated(adData.getCreated());
-        ad.setLocation(location);
-        ad.setPhoneNumber(phoneNumber);
-        ad.setEmail(email);
+//        ad.setLocation(location);
+//        ad.setPhoneNumber(phoneNumber);
+//        ad.setEmail(email);
 
         // Update images
         try {
@@ -153,9 +164,9 @@ public class AdService {
         adDto.setCondition(ad.getCondition());
         adDto.setCategory(ad.getCategory());
 //        adDto.setCreated(ad.getCreated());
-        adDto.setLocation(ad.getLocation());
-        adDto.setPhoneNumber(ad.getPhoneNumber());
-        adDto.setEmail(ad.getEmail());
+//        adDto.setLocation(ad.getLocation());
+//        adDto.setPhoneNumber(ad.getPhoneNumber());
+//        adDto.setEmail(ad.getEmail());
         adDto.setAdImagesDto(adImagesDto);
 
         return adDto;

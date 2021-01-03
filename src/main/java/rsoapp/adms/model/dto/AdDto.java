@@ -18,11 +18,10 @@ public class AdDto {
     private String title;
     private Integer price;
     private String description;
-    private String condition;
+    private String cond;
     private String category;
     private AdImagesDto adImagesDto;
-//    private Instant created;
-//    private String location;
-//    private String phoneNumber;
-//    private String email;
+    private String location;
+    private String phoneNumber;
+    private String email;
 }

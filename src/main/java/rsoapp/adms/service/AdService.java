@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import rsoapp.adms.model.dto.AdDto;
 import rsoapp.adms.model.dto.AdImagesDto;
 import rsoapp.adms.model.dto.ImageDto;
+import rsoapp.adms.model.dto.UserDto;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.repository.AdRepository;
 
@@ -24,7 +25,8 @@ public class AdService {
     private final NSFWDetectionClient nsfwDetectionClient;
 
     // just for testing
-    private final String msImageUrl = "http://image-ms:8080/v1/images/ad/";
+    private final String msImageUrl = "http://localhost:8082/v1/images/ad/";
+    private final String msUserUrl = "http://localhost:8083/v1/user/";
 
     public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient) {
         this.adRepository = adRepository;
@@ -96,7 +98,7 @@ public class AdService {
         restTemplate.delete(msImageUrl + adId.toString());
     }
 
-    public ResponseEntity<AdDto> updateAdById(Integer adId, String title, Integer price, String description, String condition, String category, String location, String phoneNumber, String email, List<MultipartFile> images) {
+    public ResponseEntity<AdDto> updateAdById(Integer adId, String title, Integer price, String description, String condition, String category, List<MultipartFile> images) {
         Optional<Ad> query = adRepository.findById(adId);
 
         if(query.isEmpty()) {
@@ -108,12 +110,8 @@ public class AdService {
         ad.setTitle(title);
         ad.setPrice(price);
         ad.setDescription(description);
-        ad.setCondition(condition);
+        ad.setCond(condition);
         ad.setCategory(category);
-//        ad.setCreated(adData.getCreated());
-//        ad.setLocation(location);
-//        ad.setPhoneNumber(phoneNumber);
-//        ad.setEmail(email);
 
         // Update images
         try {
@@ -137,13 +135,26 @@ public class AdService {
 
 
 
-    // gets images from msimage
-    private AdImagesDto getAdImages(Integer adId) {
+    // gets images from image microservice
+    public AdImagesDto getAdImages(Integer adId) {
         try {
-            System.out.println(msImageUrl + adId.toString());
             return restTemplate.getForObject(msImageUrl + adId.toString(), AdImagesDto.class);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    // get user data from user microservice
+    public void getContactData(AdDto ad, Integer userId) {
+        try {
+            UserDto user = restTemplate.getForObject(msUserUrl + userId.toString(), UserDto.class);
+            if (user != null) {
+                ad.setEmail(user.getEmail());
+                ad.setLocation(user.getAddress());
+                ad.setPhoneNumber(user.getPhoneNumber());
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
         }
     }
 
@@ -161,12 +172,8 @@ public class AdService {
         adDto.setTitle(ad.getTitle());
         adDto.setPrice(ad.getPrice());
         adDto.setDescription(ad.getDescription());
-        adDto.setCondition(ad.getCondition());
+        adDto.setCond(ad.getCond());
         adDto.setCategory(ad.getCategory());
-//        adDto.setCreated(ad.getCreated());
-//        adDto.setLocation(ad.getLocation());
-//        adDto.setPhoneNumber(ad.getPhoneNumber());
-//        adDto.setEmail(ad.getEmail());
         adDto.setAdImagesDto(adImagesDto);
 
         return adDto;

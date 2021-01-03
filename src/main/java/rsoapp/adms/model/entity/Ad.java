@@ -32,8 +32,8 @@ public class Ad {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "condition")
-    private String condition;
+    @Column(name = "cond")
+    private String cond;
 
     @Column(name = "category")
     private String category;
@@ -41,25 +41,12 @@ public class Ad {
     @Column(name = "created")
     private Instant created;
 
-//    @Column(name = "location")
-//    private String location;
-//
-//    @Column(name = "phone_number")
-//    private String phoneNumber;
-//
-//    @Column(name = "email")
-//    private String email;
-
     public Ad(Integer userId, String title, Integer price, String description, String condition, String category) {
         this.userId = userId;
         this.title = title;
         this.price = price;
         this.description = description;
-        this.condition = condition;
+        this.cond = condition;
         this.category = category;
-//        this.created = created;
-//        this.location = location;
-//        this.phoneNumber = phoneNumber;
-//        this.email = email;
     }
 }

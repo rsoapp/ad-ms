@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rsoapp.adms.model.dto.AdDto;
+import rsoapp.adms.model.dto.AdImagesDto;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.service.AdService;
 
@@ -25,6 +26,17 @@ public class AdController {
     public ResponseEntity<AdDto> getAdById(@PathVariable Integer adId) {
         try {
             AdDto ad = adService.getAdById(adId);
+            try {
+                ad.setAdImagesDto(adService.getAdImages(ad.getId()));
+            } catch (Exception e) {
+                ad.setAdImagesDto(new AdImagesDto());
+            }
+
+            try {
+                adService.getContactData(ad, ad.getUserId());
+            } catch (Exception ignored) {
+
+            }
             return new ResponseEntity<>(ad, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -85,12 +97,13 @@ public class AdController {
             @RequestParam("price") Integer price,
             @RequestParam("description") String description,
             @RequestParam("condition") String condition,
-            @RequestParam("category") String category,
-            @RequestParam("location") String location,
-            @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("email") String email) {
+            @RequestParam("category") String category
+//            @RequestParam("location") String location,
+//            @RequestParam("phoneNumber") String phoneNumber,
+//            @RequestParam("email") String email
+        ) {
         try {
-            return adService.updateAdById(adId, title, price, description, condition, category, location, phoneNumber, email, images);
+            return adService.updateAdById(adId, title, price, description, condition, category, images);
         } catch (Exception e) {
             return new ResponseEntity<>(new AdDto(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

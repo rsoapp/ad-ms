@@ -15,6 +15,7 @@ import rsoapp.adms.repository.AdRepository;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -63,7 +64,7 @@ public class AdService {
     }
 
     public List<AdDto> searchAds(String keyword) {
-        List<Ad> userAds = adRepository.searchAds(keyword);
+        List<Ad> userAds = adRepository.searchAds(keyword.toLowerCase(Locale.ROOT));
         List<AdDto> userAdsDto = new ArrayList<>(userAds.size());
 
         for (Ad userAd : userAds) {

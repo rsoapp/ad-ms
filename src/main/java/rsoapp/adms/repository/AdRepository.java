@@ -12,6 +12,6 @@ public interface AdRepository extends JpaRepository<Ad, Integer> {
 
     List<Ad> getAllByUserId(Integer userId);
 
-    @Query("SELECT a FROM Ad a WHERE a.title LIKE %?1%")
+    @Query("SELECT a FROM Ad a WHERE LOWER(a.title) LIKE %?1%")
     List<Ad> searchAds(String keyword);
 }

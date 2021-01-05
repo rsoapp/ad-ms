@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import rsoapp.adms.config.ApplicationVariables;
 import rsoapp.adms.model.dto.AdDto;
 import rsoapp.adms.model.dto.AdImagesDto;
 import rsoapp.adms.model.dto.ImageDto;
@@ -24,15 +25,19 @@ public class AdService {
     private final AdRepository adRepository;
     private final RestTemplate restTemplate;
     private final NSFWDetectionClient nsfwDetectionClient;
+    private ApplicationVariables applicationVariables;
 
     // just for testing
-    private final String msImageUrl = "http://localhost:8082/v1/images/ad/";
-    private final String msUserUrl = "http://localhost:8083/v1/user/";
+    private final String msImageUrl = "http://image-ms/v1/images/ad/";
+    private final String msUserUrl = "http://user-ms/v1/user/";
 
-    public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient) {
+    public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient, ApplicationVariables applicationVariables) {
         this.adRepository = adRepository;
         this.restTemplate = restTemplate;
         this.nsfwDetectionClient = nsfwDetectionClient;
+        this.applicationVariables = applicationVariables;
+
+        System.out.println(applicationVariables.getEnvironmentType());
     }
 
     public AdDto getAdById(Integer adId) {

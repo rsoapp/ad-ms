@@ -72,11 +72,8 @@ public class AdController {
             @RequestParam("title") String title,
             @RequestParam("price") Integer price,
             @RequestParam("description") String description,
-            @RequestParam("condition") String condition,
+            @RequestParam("cond") String condition,
             @RequestParam("category") String category
-//            @RequestParam("location") String location,
-//            @RequestParam("phoneNumber") String phoneNumber,
-//            @RequestParam("email") String email
             ) {
         try {
             Ad ad = new Ad(userId, title, price, description, condition, category);
@@ -96,11 +93,8 @@ public class AdController {
             @RequestParam("title") String title,
             @RequestParam("price") Integer price,
             @RequestParam("description") String description,
-            @RequestParam("condition") String condition,
+            @RequestParam("cond") String condition,
             @RequestParam("category") String category
-//            @RequestParam("location") String location,
-//            @RequestParam("phoneNumber") String phoneNumber,
-//            @RequestParam("email") String email
         ) {
         try {
             return adService.updateAdById(adId, title, price, description, condition, category, images);

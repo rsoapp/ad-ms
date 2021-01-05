@@ -89,7 +89,6 @@ public class AdService {
 
             return new ResponseEntity<>(adToAdDto(savedAd, new AdImagesDto(savedImages)), HttpStatus.OK);
         } catch (Exception e) {
-            System.out.println(e.toString());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -193,7 +192,6 @@ public class AdService {
         multipartReqMap.add("imageFile", doc);
 
         HttpEntity<LinkedMultiValueMap<String, Object>> reqEntity = new HttpEntity<>(multipartReqMap, headers);
-        System.out.println(msImageUrl + adId.toString());
         ResponseEntity<ImageDto> resE = restTemplate.exchange(msImageUrl + adId.toString(), HttpMethod.POST, reqEntity, ImageDto.class);
 
         return resE.getBody();

@@ -92,10 +92,12 @@ public class AdService {
             List<ImageDto> savedImages = new ArrayList<>();
 
             // save images to msimage
-            for (MultipartFile imageFile : images) {
-                if (!nsfwDetectionClient.isNSFW(imageFile)) {
-                    ImageDto savedImage = sendImageToMsImage(imageFile, savedAd.getId());
-                    savedImages.add(savedImage);
+            if (images != null) {
+                for (MultipartFile imageFile : images) {
+                    if (!nsfwDetectionClient.isNSFW(imageFile)) {
+                        ImageDto savedImage = sendImageToMsImage(imageFile, savedAd.getId());
+                        savedImages.add(savedImage);
+                    }
                 }
             }
 
@@ -132,10 +134,12 @@ public class AdService {
             List<ImageDto> savedImages = new ArrayList<>();
 
             // save images to msimage
-            for (MultipartFile imageFile : images) {
-                if (!nsfwDetectionClient.isNSFW(imageFile)) {
-                    ImageDto savedImage = sendImageToMsImage(imageFile, adId);
-                    savedImages.add(savedImage);
+            if (images != null) {
+                for (MultipartFile imageFile : images) {
+                    if (!nsfwDetectionClient.isNSFW(imageFile)) {
+                        ImageDto savedImage = sendImageToMsImage(imageFile, adId);
+                        savedImages.add(savedImage);
+                    }
                 }
             }
 

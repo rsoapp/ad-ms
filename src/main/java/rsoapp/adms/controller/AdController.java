@@ -69,7 +69,7 @@ public class AdController {
     @PostMapping("user/{userId}")
     public ResponseEntity<AdDto> saveAd(
             @PathVariable Integer userId,
-            @RequestParam("images") List<MultipartFile> images,
+            @RequestParam(required = false) List<MultipartFile> images,
             @RequestParam("title") String title,
             @RequestParam("price") Integer price,
             @RequestParam("description") String description,
@@ -90,7 +90,7 @@ public class AdController {
     @PutMapping("{adId}")
     public ResponseEntity<AdDto> updateAd(
             @PathVariable Integer adId,
-            @RequestParam("images") List<MultipartFile> images,
+            @RequestParam(required = false) List<MultipartFile> images,
             @RequestParam("title") String title,
             @RequestParam("price") Integer price,
             @RequestParam("description") String description,

@@ -28,15 +28,23 @@ public class AdService {
     private ApplicationVariables applicationVariables;
 
     // just for testing
-    private final String msImageUrl = "http://image-ms/v1/images/ad/";
-    private final String msUserUrl = "http://user-ms/v1/user/";
+    private String msImageUrl;
+    private String msUserUrl;
 
     public AdService(AdRepository adRepository, RestTemplate restTemplate, NSFWDetectionClient nsfwDetectionClient, ApplicationVariables applicationVariables) {
         this.adRepository = adRepository;
         this.restTemplate = restTemplate;
         this.nsfwDetectionClient = nsfwDetectionClient;
         this.applicationVariables = applicationVariables;
-        System.out.println(applicationVariables.getEnvironmentType());
+
+        if (applicationVariables.getEnvironmentType().equals("prod")) {
+            msImageUrl = "http://image-ms/v1/images/ad/";
+            msUserUrl = "http://user-ms/v1/user/";
+        }
+        else {
+            msImageUrl = "http://localhost:8082/v1/images/ad/";
+            msUserUrl = "http://localhost:8083/v1/user/";
+        }
     }
 
     public AdDto getAdById(Integer adId) {

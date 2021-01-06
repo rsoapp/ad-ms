@@ -36,7 +36,6 @@ public class AdService {
         this.restTemplate = restTemplate;
         this.nsfwDetectionClient = nsfwDetectionClient;
         this.applicationVariables = applicationVariables;
-
         System.out.println(applicationVariables.getEnvironmentType());
     }
 

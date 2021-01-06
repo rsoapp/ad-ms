@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import rsoapp.adms.model.dto.AdDto;
 import rsoapp.adms.model.dto.AdImagesDto;
+import rsoapp.adms.model.dto.UserAds;
 import rsoapp.adms.model.entity.Ad;
 import rsoapp.adms.service.AdService;
 
@@ -44,10 +45,10 @@ public class AdController {
     }
 
     @GetMapping("user/{userId}")
-    public ResponseEntity<List<AdDto>> getUserAds(@PathVariable Integer userId) {
+    public ResponseEntity<UserAds> getUserAds(@PathVariable Integer userId) {
         try {
             List<AdDto> userAds = adService.getUserAds(userId);
-            return new ResponseEntity<>(userAds, HttpStatus.OK);
+            return new ResponseEntity<>(new UserAds(userAds), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -74,7 +75,7 @@ public class AdController {
             @RequestParam("description") String description,
             @RequestParam("cond") String condition,
             @RequestParam("category") String category
-            ) {
+    ) {
         try {
             Ad ad = new Ad(userId, title, price, description, condition, category);
             return adService.saveAd(ad, images);
@@ -95,7 +96,7 @@ public class AdController {
             @RequestParam("description") String description,
             @RequestParam("cond") String condition,
             @RequestParam("category") String category
-        ) {
+    ) {
         try {
             return adService.updateAdById(adId, title, price, description, condition, category, images);
         } catch (Exception e) {

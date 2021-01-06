@@ -38,8 +38,8 @@ public class AdService {
         this.applicationVariables = applicationVariables;
 
         if (applicationVariables.getEnvironmentType().equals("prod")) {
-            msImageUrl = "http://image-ms/v1/images/ad/";
-            msUserUrl = "http://user-ms/v1/user/";
+            msImageUrl = "http://image-ms:8080/v1/images/ad/";
+            msUserUrl = "http://user-ms:8080/v1/user/";
         }
         else {
             msImageUrl = "http://localhost:8082/v1/images/ad/";

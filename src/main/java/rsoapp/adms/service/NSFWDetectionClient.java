@@ -12,6 +12,7 @@ import io.kraken.client.model.response.SuccessfulUploadResponse;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import rsoapp.adms.config.ApplicationVariables;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
@@ -20,11 +21,15 @@ import java.math.BigDecimal;
 public class NSFWDetectionClient {
 
     private final double nsfwPropThr = 0.1;
-    private final boolean CHECK_NSFW = true;
+    private ApplicationVariables applicationVariables;
+
+    public NSFWDetectionClient(ApplicationVariables applicationVariables) {
+        this.applicationVariables = applicationVariables;
+    }
 
     public boolean isNSFW(MultipartFile imageFile) {
 
-        if (!CHECK_NSFW) return false;
+        if (applicationVariables.getNsfwDetection().equals("false")) return false;
 
         String imageUrl = uploadImage(imageFile);
 

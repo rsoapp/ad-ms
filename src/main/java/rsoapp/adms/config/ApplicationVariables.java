@@ -18,4 +18,5 @@ public class ApplicationVariables {
     private String name;
     private String version;
     private String environmentType;
+    private String nsfwDetection;
 }

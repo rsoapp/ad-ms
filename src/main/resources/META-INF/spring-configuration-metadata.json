@@ -20,6 +20,13 @@
       "description": "Description for spring.application.environmentType.",
       "sourceType": "spring.application.environmentType",
       "defaultValue": "dev"
+    },
+    {
+      "name": "spring.application.nsfwDetection",
+      "type": "java.lang.String",
+      "description": "",
+      "sourceType": "spring.application.nsfwDetection",
+      "defaultValue": "true"
     }
   ],
   "hints": []

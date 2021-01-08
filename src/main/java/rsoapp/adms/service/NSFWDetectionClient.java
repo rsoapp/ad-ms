@@ -19,8 +19,8 @@ import java.math.BigDecimal;
 @Service
 public class NSFWDetectionClient {
 
-    private final double nsfwPropThr = 0.4;
-    private final boolean CHECK_NSFW = false;
+    private final double nsfwPropThr = 0.1;
+    private final boolean CHECK_NSFW = true;
 
     public boolean isNSFW(MultipartFile imageFile) {
 

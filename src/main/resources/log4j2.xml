@@ -4,8 +4,8 @@
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%highlight{%d %p %marker %m %X %ex %n}" disableAnsi="false"/>
         </Console>
-        <Socket name="logstash" host="293dce91-05b0-41fd-bef2-0dd4e0cb541c-ls.logit.io"
-                port="10006" protocol="udp">
+        <Socket name="logstash" host="d463ee00-503e-4c43-827c-f92fcb4f1cc5-ls.logit.io"
+                port="10654" protocol="udp">
             <JSONLayout complete="false" compact="true" eventEol="true" charset="UTF-8" properties="true">
                 <KeyValuePair key="environmentType" value="${map:environmentType}" />
                 <KeyValuePair key="applicationName" value="${map:applicationName}" />
